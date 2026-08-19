@@ -18,6 +18,22 @@ public static class UserStore
     private static readonly object Sync = new object();
     private static readonly List<AppUser> Users = new List<AppUser>();
 
+    static UserStore()
+    {
+        Users.Add(new AppUser
+        {
+            Name = "Demo User",
+            Email = "demo@legacyauth.local",
+            Password = "demo123"
+        });
+        Users.Add(new AppUser
+        {
+            Name = "Admin User",
+            Email = "admin@legacyauth.local",
+            Password = "admin123"
+        });
+    }
+
     public static bool EmailExists(string email)
     {
         lock (Sync)

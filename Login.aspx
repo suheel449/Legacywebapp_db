@@ -18,14 +18,21 @@
 
       <main class="form-panel">
         <h1>Sign in</h1>
-        <p class="subtitle">Use the account you registered in this app.</p>
+        <p class="subtitle">Use the dummy account below, or register a new one.</p>
+
+        <div class="demo-box">
+          <p class="demo-title">Dummy login</p>
+          <p>Email: <strong>demo@legacyauth.local</strong></p>
+          <p>Password: <strong>demo123</strong></p>
+          <p class="demo-alt">Admin: <strong>admin@legacyauth.local</strong> / <strong>admin123</strong></p>
+        </div>
 
         <div class="fields">
           <asp:Label ID="lblEmail" runat="server" AssociatedControlID="txtEmail" Text="Email" />
-          <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="input" />
+          <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="input" Text="demo@legacyauth.local" />
 
           <asp:Label ID="lblPassword" runat="server" AssociatedControlID="txtPassword" Text="Password" />
-          <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="input" />
+          <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="input" Text="demo123" />
 
           <asp:Label ID="lblMessage" runat="server" CssClass="message" Visible="false" />
 

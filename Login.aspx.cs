@@ -7,7 +7,14 @@ public partial class LoginPage : Page
     {
         if (Session["UserEmail"] != null)
         {
-            Response.Redirect("Home.aspx");
+            Response.Redirect("Dashboard.aspx");
+            return;
+        }
+
+        if (!IsPostBack)
+        {
+            txtEmail.Text = "demo@legacyauth.local";
+            txtPassword.Attributes["value"] = "demo123";
         }
     }
 
@@ -31,7 +38,7 @@ public partial class LoginPage : Page
 
         Session["UserEmail"] = user.Email;
         Session["UserName"] = user.Name;
-        Response.Redirect("Home.aspx");
+        Response.Redirect("Dashboard.aspx");
     }
 
     private void ShowMessage(string text, bool isError)

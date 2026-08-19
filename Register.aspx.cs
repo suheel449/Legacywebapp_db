@@ -7,7 +7,7 @@ public partial class RegisterPage : Page
     {
         if (Session["UserEmail"] != null)
         {
-            Response.Redirect("Home.aspx");
+            Response.Redirect("Dashboard.aspx");
         }
     }
 
@@ -45,7 +45,7 @@ public partial class RegisterPage : Page
         UserStore.Register(name, email, password);
         Session["UserEmail"] = email.Trim().ToLowerInvariant();
         Session["UserName"] = name;
-        Response.Redirect("Home.aspx");
+        Response.Redirect("Dashboard.aspx");
     }
 
     private void ShowMessage(string text, bool isError)

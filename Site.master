@@ -1,0 +1,67 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Site.master.cs" Inherits="SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><asp:ContentPlaceHolder ID="TitleContent" runat="server">Legacy Auth</asp:ContentPlaceHolder></title>
+  <link rel="stylesheet" href="Styles/Site.css?v=3" />
+  <style>
+    .app-shell { min-height: 100vh; display: flex; }
+    .sidebar { width: 240px; flex-shrink: 0; padding: 28px 18px; background: linear-gradient(180deg, #0a4d37, #1a2421); color: #f5faf7; }
+    .brand.compact.sidebar-brand { color: #f5faf7; margin-bottom: 28px; }
+    .side-nav { display: flex; flex-direction: column; gap: 6px; }
+    .nav-link { display: block; padding: 10px 12px; border-radius: 8px; color: #dce8e3; text-decoration: none; font-weight: 600; }
+    .nav-link:hover, .nav-link.active { background: rgba(255,255,255,.12); color: #fff; }
+    .app-main { flex: 1; min-width: 0; }
+    .app-topbar { display: flex; justify-content: space-between; gap: 16px; padding: 24px 32px 12px; }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .user-chip { padding: 8px 12px; border-radius: 999px; background: #fff; border: 1px solid #d5ddd8; font-weight: 600; }
+    .app-content { padding: 8px 32px 40px; }
+    .stat-grid, .split-grid { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+    .stat-grid .card { flex: 1 1 180px; }
+    .split-grid .card { flex: 1 1 280px; }
+    .card { background: #fff; border: 1px solid #d5ddd8; border-radius: 16px; box-shadow: 0 18px 40px rgba(26,36,33,.08); padding: 24px; }
+    .action-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+    .action { display: block; padding: 12px 14px; border-radius: 8px; background: #f6faf8; color: #0a4d37; text-decoration: none; font-weight: 600; }
+    .timeline { list-style: none; margin: 16px 0 0; padding: 0; }
+    .timeline li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #d5ddd8; }
+    @media (max-width: 860px) { .app-shell { flex-direction: column; } .sidebar { width: auto; } }
+  </style>
+  <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+</head>
+<body class="app-body">
+  <form id="form1" runat="server">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <p class="brand compact sidebar-brand">Legacy Auth</p>
+        <nav class="side-nav">
+          <asp:HyperLink ID="lnkDashboard" runat="server" NavigateUrl="Dashboard.aspx" CssClass="nav-link">Dashboard</asp:HyperLink>
+          <asp:HyperLink ID="lnkProfile" runat="server" NavigateUrl="Profile.aspx" CssClass="nav-link">Profile</asp:HyperLink>
+          <asp:HyperLink ID="lnkReports" runat="server" NavigateUrl="Reports.aspx" CssClass="nav-link">Reports</asp:HyperLink>
+          <asp:HyperLink ID="lnkNotifications" runat="server" NavigateUrl="Notifications.aspx" CssClass="nav-link">Notifications</asp:HyperLink>
+          <asp:HyperLink ID="lnkSettings" runat="server" NavigateUrl="Settings.aspx" CssClass="nav-link">Settings</asp:HyperLink>
+        </nav>
+      </aside>
+
+      <div class="app-main">
+        <header class="app-topbar">
+          <div>
+            <p class="eyebrow"><asp:Literal ID="litPageHint" runat="server" /></p>
+            <h1 class="page-title"><asp:Literal ID="litPageTitle" runat="server" /></h1>
+          </div>
+          <div class="topbar-actions">
+            <span class="user-chip"><asp:Literal ID="litUserName" runat="server" /></span>
+            <asp:Button ID="btnLogout" runat="server" Text="Sign out" CssClass="btn ghost" OnClick="btnLogout_Click" />
+          </div>
+        </header>
+
+        <div class="app-content">
+          <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </div>
+      </div>
+    </div>
+  </form>
+</body>
+</html>
