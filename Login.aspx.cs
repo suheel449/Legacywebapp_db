@@ -29,16 +29,27 @@ public partial class LoginPage : Page
             return;
         }
 
-        AppUser user = UserStore.Validate(email, password);
-        if (user == null)
+        try
         {
-            ShowMessage("Invalid email or password.", true);
-            return;
-        }
+            AppUser user = AppDb.Validate(email, password);
+            if (user == null)
+            {
+                ShowMessage("Invalid email or password.", true);
+                return;
+            }
 
-        Session["UserEmail"] = user.Email;
-        Session["UserName"] = user.Name;
-        Response.Redirect("Dashboard.aspx");
+            Session["UserId"] = user.UserId;
+            Session["UserEmail"] = user.Email;
+            Session["UserName"] = user.Name;
+            Session["UserRole"] = user.RoleName;
+
+            AppDb.LogActivity(user.UserId, "Signed in");
+            Response.Redirect("Dashboard.aspx");
+        }
+        catch (Exception)
+        {
+            ShowMessage("Unable to reach the database. Check the connection string and that LegacyBizDb exists.", true);
+        }
     }
 
     private void ShowMessage(string text, bool isError)

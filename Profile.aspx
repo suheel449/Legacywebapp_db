@@ -5,7 +5,7 @@
 <asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
   <article class="card">
     <h2>Account details</h2>
-    <p class="subtitle">Stored in session only — nothing is written to a database.</p>
+    <p class="subtitle">Loaded from the Users table in LegacyBizDb.</p>
 
     <dl class="profile">
       <div>
@@ -18,11 +18,11 @@
       </div>
       <div>
         <dt>Role</dt>
-        <dd>Member</dd>
+        <dd><asp:Literal ID="litRole" runat="server" /></dd>
       </div>
       <div>
         <dt>Status</dt>
-        <dd>Active</dd>
+        <dd><asp:Literal ID="litStatus" runat="server" /></dd>
       </div>
     </dl>
   </article>

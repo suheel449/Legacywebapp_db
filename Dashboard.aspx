@@ -8,23 +8,23 @@
   <section class="stat-grid">
     <article class="card stat">
       <p class="stat-label">Open tasks</p>
-      <p class="stat-value">8</p>
-      <p class="stat-note">3 due this week</p>
+      <p class="stat-value"><asp:Literal ID="litOpenTasks" runat="server" Text="0" /></p>
+      <p class="stat-note"><asp:Literal ID="litTasksDue" runat="server" Text="—" /></p>
     </article>
     <article class="card stat">
       <p class="stat-label">Reports</p>
-      <p class="stat-value">12</p>
-      <p class="stat-note">Last export yesterday</p>
+      <p class="stat-value"><asp:Literal ID="litReports" runat="server" Text="0" /></p>
+      <p class="stat-note">From SQL Server</p>
     </article>
     <article class="card stat">
       <p class="stat-label">Notifications</p>
-      <p class="stat-value">4</p>
-      <p class="stat-note">2 unread</p>
+      <p class="stat-value"><asp:Literal ID="litNotifications" runat="server" Text="0" /></p>
+      <p class="stat-note"><asp:Literal ID="litUnread" runat="server" Text="—" /></p>
     </article>
     <article class="card stat">
       <p class="stat-label">Team members</p>
-      <p class="stat-value">6</p>
-      <p class="stat-note">In-memory demo data</p>
+      <p class="stat-value"><asp:Literal ID="litTeam" runat="server" Text="0" /></p>
+      <p class="stat-note">Active users</p>
     </article>
   </section>
 
@@ -41,10 +41,7 @@
     <article class="card">
       <h2>Recent activity</h2>
       <ul class="timeline">
-        <li><strong>Signed in</strong><span>Just now</span></li>
-        <li><strong>Weekly summary generated</strong><span>Yesterday</span></li>
-        <li><strong>Profile viewed</strong><span>2 days ago</span></li>
-        <li><strong>Password last changed</strong><span>Demo only</span></li>
+        <asp:Literal ID="litActivity" runat="server" />
       </ul>
     </article>
   </section>

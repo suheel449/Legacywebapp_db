@@ -13,12 +13,12 @@
     <div class="page">
       <aside class="brand-panel">
         <p class="brand">Legacy Auth</p>
-        <p class="tagline">Register with ASPX pages. Stored in memory only.</p>
+        <p class="tagline">Register with ASPX pages. Accounts saved to SQL Server.</p>
       </aside>
 
       <main class="form-panel">
         <h1>Create account</h1>
-        <p class="subtitle">No database — users live in app memory.</p>
+        <p class="subtitle">New accounts are inserted into the Users table.</p>
 
         <div class="fields">
           <asp:Label ID="lblName" runat="server" AssociatedControlID="txtName" Text="Full name" />

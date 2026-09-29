@@ -5,7 +5,7 @@
 <asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
   <article class="card">
     <h2>Preferences</h2>
-    <p class="subtitle">Saved in this session only.</p>
+    <p class="subtitle">Saved to UserPreferences in SQL Server.</p>
 
     <div class="fields settings-fields">
       <asp:CheckBox ID="chkEmailAlerts" runat="server" Text="Email alerts" />

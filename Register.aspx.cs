@@ -36,16 +36,25 @@ public partial class RegisterPage : Page
             return;
         }
 
-        if (UserStore.EmailExists(email))
+        try
         {
-            ShowMessage("An account with this email already exists.", true);
-            return;
-        }
+            if (AppDb.EmailExists(email))
+            {
+                ShowMessage("An account with this email already exists.", true);
+                return;
+            }
 
-        UserStore.Register(name, email, password);
-        Session["UserEmail"] = email.Trim().ToLowerInvariant();
-        Session["UserName"] = name;
-        Response.Redirect("Dashboard.aspx");
+            AppUser user = AppDb.Register(name, email, password);
+            Session["UserId"] = user.UserId;
+            Session["UserEmail"] = user.Email;
+            Session["UserName"] = user.Name;
+            Session["UserRole"] = user.RoleName;
+            Response.Redirect("Dashboard.aspx");
+        }
+        catch (Exception)
+        {
+            ShowMessage("Unable to reach the database. Check the connection string and that LegacyBizDb exists.", true);
+        }
     }
 
     private void ShowMessage(string text, bool isError)
