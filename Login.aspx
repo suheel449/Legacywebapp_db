@@ -13,7 +13,7 @@
     <div class="page">
       <aside class="brand-panel">
         <p class="brand">Legacy Auth</p>
-        <p class="tagline">ASP.NET Web Forms login backed by SQL Server.</p>
+        <p class="tagline">ASP.NET Web Forms login backed by MySQL.</p>
       </aside>
 
       <main class="form-panel">

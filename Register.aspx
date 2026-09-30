@@ -13,7 +13,7 @@
     <div class="page">
       <aside class="brand-panel">
         <p class="brand">Legacy Auth</p>
-        <p class="tagline">Register with ASPX pages. Accounts saved to SQL Server.</p>
+        <p class="tagline">Register with ASPX pages. Accounts saved to MySQL.</p>
       </aside>
 
       <main class="form-panel">

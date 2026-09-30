@@ -14,7 +14,7 @@
     <article class="card stat">
       <p class="stat-label">Reports</p>
       <p class="stat-value"><asp:Literal ID="litReports" runat="server" Text="0" /></p>
-      <p class="stat-note">From SQL Server</p>
+      <p class="stat-note">From MySQL</p>
     </article>
     <article class="card stat">
       <p class="stat-label">Notifications</p>

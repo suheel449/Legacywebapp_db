@@ -5,7 +5,7 @@
 <asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
   <article class="card">
     <h2>Preferences</h2>
-    <p class="subtitle">Saved to UserPreferences in SQL Server.</p>
+    <p class="subtitle">Saved to UserPreferences in MySQL.</p>
 
     <div class="fields settings-fields">
       <asp:CheckBox ID="chkEmailAlerts" runat="server" Text="Email alerts" />

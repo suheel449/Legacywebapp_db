@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 public class AppUser
 {
@@ -53,7 +53,7 @@ public class DashboardStats
 }
 
 /// <summary>
-/// SQL Server data access for all Legacy Auth pages.
+/// MySQL data access for all Legacy Auth pages.
 /// </summary>
 public static class AppDb
 {
@@ -64,11 +64,11 @@ public static class AppDb
 
     public static bool EmailExists(string email)
     {
-        const string sql = "SELECT COUNT(1) FROM dbo.Users WHERE Email = @Email";
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        const string sql = "SELECT COUNT(1) FROM Users WHERE Email = @Email";
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
-            cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 150).Value = email.Trim().ToLowerInvariant();
+            cmd.Parameters.Add("@Email", MySqlDbType.VarChar, 150).Value = email.Trim().ToLowerInvariant();
             conn.Open();
             return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
         }
@@ -78,16 +78,16 @@ public static class AppDb
     {
         const string sql = @"
             SELECT UserId, FullName, Email, RoleName, IsActive
-            FROM dbo.Users
+            FROM Users
             WHERE Email = @Email AND PasswordHash = @Password AND IsActive = 1";
 
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
-            cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 150).Value = email.Trim().ToLowerInvariant();
-            cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 100).Value = password ?? string.Empty;
+            cmd.Parameters.Add("@Email", MySqlDbType.VarChar, 150).Value = email.Trim().ToLowerInvariant();
+            cmd.Parameters.Add("@Password", MySqlDbType.VarChar, 100).Value = password ?? string.Empty;
             conn.Open();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
                 if (!reader.Read())
                 {
@@ -103,49 +103,49 @@ public static class AppDb
     {
         string normalizedEmail = email.Trim().ToLowerInvariant();
 
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
         {
             conn.Open();
-            using (SqlTransaction tx = conn.BeginTransaction())
+            using (MySqlTransaction tx = conn.BeginTransaction())
             {
-                int userId;
                 const string insertUser = @"
-                    INSERT INTO dbo.Users (FullName, Email, PasswordHash, RoleName)
-                    OUTPUT INSERTED.UserId
-                    VALUES (@FullName, @Email, @Password, N'Member')";
+                    INSERT INTO Users (FullName, Email, PasswordHash, RoleName)
+                    VALUES (@FullName, @Email, @Password, 'Member')";
 
-                using (SqlCommand cmd = new SqlCommand(insertUser, conn, tx))
+                int userId;
+                using (MySqlCommand cmd = new MySqlCommand(insertUser, conn, tx))
                 {
-                    cmd.Parameters.Add("@FullName", SqlDbType.NVarChar, 100).Value = name.Trim();
-                    cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 150).Value = normalizedEmail;
-                    cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 100).Value = password;
-                    userId = Convert.ToInt32(cmd.ExecuteScalar());
+                    cmd.Parameters.Add("@FullName", MySqlDbType.VarChar, 100).Value = name.Trim();
+                    cmd.Parameters.Add("@Email", MySqlDbType.VarChar, 150).Value = normalizedEmail;
+                    cmd.Parameters.Add("@Password", MySqlDbType.VarChar, 100).Value = password;
+                    cmd.ExecuteNonQuery();
+                    userId = Convert.ToInt32(cmd.LastInsertedId);
                 }
 
                 const string insertPrefs = @"
-                    INSERT INTO dbo.UserPreferences (UserId, EmailAlerts, WeeklyDigest, CompactNav)
+                    INSERT INTO UserPreferences (UserId, EmailAlerts, WeeklyDigest, CompactNav)
                     VALUES (@UserId, 1, 1, 0)";
-                using (SqlCommand cmd = new SqlCommand(insertPrefs, conn, tx))
+                using (MySqlCommand cmd = new MySqlCommand(insertPrefs, conn, tx))
                 {
-                    cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                    cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
                     cmd.ExecuteNonQuery();
                 }
 
                 const string insertNotice = @"
-                    INSERT INTO dbo.Notifications (UserId, Title, Body, IsRead)
-                    VALUES (@UserId, N'Welcome to Legacy Auth', N'Your account was created and stored in SQL Server.', 0)";
-                using (SqlCommand cmd = new SqlCommand(insertNotice, conn, tx))
+                    INSERT INTO Notifications (UserId, Title, Body, IsRead)
+                    VALUES (@UserId, 'Welcome to Legacy Auth', 'Your account was created and stored in MySQL.', 0)";
+                using (MySqlCommand cmd = new MySqlCommand(insertNotice, conn, tx))
                 {
-                    cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                    cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
                     cmd.ExecuteNonQuery();
                 }
 
                 const string insertActivity = @"
-                    INSERT INTO dbo.ActivityLog (UserId, Description)
-                    VALUES (@UserId, N'Account registered')";
-                using (SqlCommand cmd = new SqlCommand(insertActivity, conn, tx))
+                    INSERT INTO ActivityLog (UserId, Description)
+                    VALUES (@UserId, 'Account registered')";
+                using (MySqlCommand cmd = new MySqlCommand(insertActivity, conn, tx))
                 {
-                    cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                    cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
                     cmd.ExecuteNonQuery();
                 }
 
@@ -167,15 +167,15 @@ public static class AppDb
     {
         const string sql = @"
             SELECT UserId, FullName, Email, RoleName, IsActive
-            FROM dbo.Users
+            FROM Users
             WHERE UserId = @UserId";
 
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+            cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
             conn.Open();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
                 if (!reader.Read())
                 {
@@ -190,14 +190,14 @@ public static class AppDb
     public static void LogActivity(int userId, string description)
     {
         const string sql = @"
-            INSERT INTO dbo.ActivityLog (UserId, Description)
+            INSERT INTO ActivityLog (UserId, Description)
             VALUES (@UserId, @Description)";
 
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
-            cmd.Parameters.Add("@Description", SqlDbType.NVarChar, 250).Value = description;
+            cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
+            cmd.Parameters.Add("@Description", MySqlDbType.VarChar, 250).Value = description;
             conn.Open();
             cmd.ExecuteNonQuery();
         }
@@ -207,15 +207,15 @@ public static class AppDb
     {
         const string sql = @"
             SELECT EmailAlerts, WeeklyDigest, CompactNav
-            FROM dbo.UserPreferences
+            FROM UserPreferences
             WHERE UserId = @UserId";
 
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+            cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
             conn.Open();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
                 if (!reader.Read())
                 {
@@ -229,9 +229,9 @@ public static class AppDb
 
                 return new UserPreferences
                 {
-                    EmailAlerts = reader.GetBoolean(0),
-                    WeeklyDigest = reader.GetBoolean(1),
-                    CompactNav = reader.GetBoolean(2)
+                    EmailAlerts = ReadBool(reader, 0),
+                    WeeklyDigest = ReadBool(reader, 1),
+                    CompactNav = ReadBool(reader, 2)
                 };
             }
         }
@@ -240,24 +240,21 @@ public static class AppDb
     public static void SavePreferences(int userId, UserPreferences prefs)
     {
         const string sql = @"
-            IF EXISTS (SELECT 1 FROM dbo.UserPreferences WHERE UserId = @UserId)
-                UPDATE dbo.UserPreferences
-                SET EmailAlerts = @EmailAlerts,
-                    WeeklyDigest = @WeeklyDigest,
-                    CompactNav = @CompactNav,
-                    UpdatedAt = SYSUTCDATETIME()
-                WHERE UserId = @UserId
-            ELSE
-                INSERT INTO dbo.UserPreferences (UserId, EmailAlerts, WeeklyDigest, CompactNav)
-                VALUES (@UserId, @EmailAlerts, @WeeklyDigest, @CompactNav)";
+            INSERT INTO UserPreferences (UserId, EmailAlerts, WeeklyDigest, CompactNav)
+            VALUES (@UserId, @EmailAlerts, @WeeklyDigest, @CompactNav) AS new
+            ON DUPLICATE KEY UPDATE
+                EmailAlerts = new.EmailAlerts,
+                WeeklyDigest = new.WeeklyDigest,
+                CompactNav = new.CompactNav,
+                UpdatedAt = UTC_TIMESTAMP()";
 
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
-            cmd.Parameters.Add("@EmailAlerts", SqlDbType.Bit).Value = prefs.EmailAlerts;
-            cmd.Parameters.Add("@WeeklyDigest", SqlDbType.Bit).Value = prefs.WeeklyDigest;
-            cmd.Parameters.Add("@CompactNav", SqlDbType.Bit).Value = prefs.CompactNav;
+            cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
+            cmd.Parameters.Add("@EmailAlerts", MySqlDbType.Byte).Value = prefs.EmailAlerts ? 1 : 0;
+            cmd.Parameters.Add("@WeeklyDigest", MySqlDbType.Byte).Value = prefs.WeeklyDigest ? 1 : 0;
+            cmd.Parameters.Add("@CompactNav", MySqlDbType.Byte).Value = prefs.CompactNav ? 1 : 0;
             conn.Open();
             cmd.ExecuteNonQuery();
         }
@@ -265,13 +262,13 @@ public static class AppDb
 
     public static DashboardStats GetDashboardStats(int userId)
     {
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand("dbo.usp_GetDashboardStats", conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand("usp_GetDashboardStats", conn))
         {
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+            cmd.Parameters.Add("p_UserId", MySqlDbType.Int32).Value = userId;
             conn.Open();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
                 if (!reader.Read())
                 {
@@ -280,12 +277,12 @@ public static class AppDb
 
                 return new DashboardStats
                 {
-                    OpenTasks = reader.GetInt32(0),
-                    TasksDueThisWeek = reader.GetInt32(1),
-                    ReportCount = reader.GetInt32(2),
-                    NotificationCount = reader.GetInt32(3),
-                    UnreadNotifications = reader.GetInt32(4),
-                    TeamMembers = reader.GetInt32(5)
+                    OpenTasks = Convert.ToInt32(reader.GetValue(0)),
+                    TasksDueThisWeek = Convert.ToInt32(reader.GetValue(1)),
+                    ReportCount = Convert.ToInt32(reader.GetValue(2)),
+                    NotificationCount = Convert.ToInt32(reader.GetValue(3)),
+                    UnreadNotifications = Convert.ToInt32(reader.GetValue(4)),
+                    TeamMembers = Convert.ToInt32(reader.GetValue(5))
                 };
             }
         }
@@ -294,19 +291,20 @@ public static class AppDb
     public static List<ActivityItem> GetRecentActivity(int userId, int top)
     {
         const string sql = @"
-            SELECT TOP (@Top) Description, CreatedAt
-            FROM dbo.ActivityLog
+            SELECT Description, CreatedAt
+            FROM ActivityLog
             WHERE UserId = @UserId OR UserId IS NULL
-            ORDER BY CreatedAt DESC";
+            ORDER BY CreatedAt DESC
+            LIMIT @Top";
 
         List<ActivityItem> items = new List<ActivityItem>();
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
-            cmd.Parameters.Add("@Top", SqlDbType.Int).Value = top;
+            cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
+            cmd.Parameters.Add("@Top", MySqlDbType.Int32).Value = top;
             conn.Open();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
@@ -326,15 +324,15 @@ public static class AppDb
     {
         const string sql = @"
             SELECT Title, OwnerTeam, PeriodLabel, Status
-            FROM dbo.Reports
+            FROM Reports
             ORDER BY ReportId";
 
         List<ReportItem> items = new List<ReportItem>();
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
             conn.Open();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
@@ -356,17 +354,17 @@ public static class AppDb
     {
         const string sql = @"
             SELECT NotificationId, Title, Body, IsRead
-            FROM dbo.Notifications
+            FROM Notifications
             WHERE UserId IS NULL OR UserId = @UserId
             ORDER BY IsRead ASC, CreatedAt DESC";
 
         List<NotificationItem> items = new List<NotificationItem>();
-        using (SqlConnection conn = new SqlConnection(ConnectionString))
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
         {
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+            cmd.Parameters.Add("@UserId", MySqlDbType.Int32).Value = userId;
             conn.Open();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
@@ -375,7 +373,7 @@ public static class AppDb
                         NotificationId = reader.GetInt32(0),
                         Title = reader.GetString(1),
                         Body = reader.GetString(2),
-                        IsRead = reader.GetBoolean(3)
+                        IsRead = ReadBool(reader, 3)
                     });
                 }
             }
@@ -384,7 +382,7 @@ public static class AppDb
         return items;
     }
 
-    private static AppUser ReadUser(SqlDataReader reader)
+    private static AppUser ReadUser(MySqlDataReader reader)
     {
         return new AppUser
         {
@@ -392,7 +390,12 @@ public static class AppDb
             Name = reader.GetString(reader.GetOrdinal("FullName")),
             Email = reader.GetString(reader.GetOrdinal("Email")),
             RoleName = reader.GetString(reader.GetOrdinal("RoleName")),
-            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive"))
+            IsActive = ReadBool(reader, reader.GetOrdinal("IsActive"))
         };
+    }
+
+    private static bool ReadBool(MySqlDataReader reader, int ordinal)
+    {
+        return Convert.ToBoolean(reader.GetValue(ordinal));
     }
 }
